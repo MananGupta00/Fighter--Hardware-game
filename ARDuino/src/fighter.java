@@ -1,0 +1,384 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
+
+
+
+/**
+ *
+ * @author manan
+ */
+public class fighter extends javax.swing.JFrame implements SerialPortEventListener {
+SerialPort serialPort;
+String inputVal;
+int hp2=100;
+int inputValue;
+
+    /**
+     * Creates new form fighter
+     */
+    public fighter() {
+        initComponents();
+    }
+    
+    
+    
+        /** The port we're normally going to use. */
+    private static final String PORT_NAMES[] = {
+            "COM23", // Windows
+    };
+   
+    /**
+    * A BufferedReader which will be fed by a InputStreamReader
+    * converting the bytes into characters
+    * making the displayed results codepage independent
+    */
+    private BufferedReader input;
+    /** The output stream to the port */
+    private OutputStream output;
+    /** Milliseconds to block while waiting for port open */
+    private static final int TIME_OUT = 2000;
+    /** Default bits per second for COM port. */
+    private static final int DATA_RATE = 9600;
+ 
+    public void initialize() {
+                // the next line is for Raspberry Pi and
+                // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
+       
+               CommPortIdentifier portId = null;
+        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
+ 
+        //First, Find an instance of serial port as set in PORT_NAMES.
+        while (portEnum.hasMoreElements()) {
+            CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+            for (String portName : PORT_NAMES) {
+                if (currPortId.getName().equals(portName)) {
+                    portId = currPortId;
+                    break;
+                }
+            }
+        }
+        if (portId == null) {
+            System.out.println("Could not find COM port.");
+            return;
+        }
+ 
+        try {
+            // open serial port, and use class name for the appName.
+            serialPort = (SerialPort) portId.open(this.getClass().getName(),
+                    TIME_OUT);
+ 
+            // set port parameters
+            serialPort.setSerialPortParams(DATA_RATE,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+ 
+            // open the streams
+            input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+            output = serialPort.getOutputStream();
+ 
+            // add event listeners
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+    }
+ 
+    /**
+     * This should be called when you stop using the port.
+     * This will prevent port locking on platforms like Linux.
+     */
+    public synchronized void close() {
+        if (serialPort != null) {
+            serialPort.removeEventListener();
+            serialPort.close();
+        }
+    }
+ 
+    /**
+     * Handle an event on the serial port. Read the data and print it.
+     */
+    public synchronized void serialEvent(SerialPortEvent oEvent) {
+        if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            try {
+                String inputLine=input.readLine();
+                inputValue= Integer.parseInt(inputLine);
+                System.out.println(inputLine);
+                
+                Timer t= new Timer();
+                if(a.isVisible()) {
+                    if(inputValue<50) {
+                    a.setVisible(false);
+                    apunch.setVisible(true);
+
+
+                    TimerTask t1= new TimerTask(){
+                        public void run(){
+                            apunch.setVisible(false);
+                            a.setVisible(true);
+                            }
+                        };
+        
+        
+                            t.schedule(t1, 300);
+                            hp2=hp2-10;
+                    }
+
+                    hp2val.setValue(hp2);
+                }
+                
+            }
+        catch (Exception e) {
+            System.err.println(e.toString());
+            }
+        }
+        // Ignore all the other eventTypes, but you should consider the other ones.
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        hp2val = new javax.swing.JProgressBar();
+        aPanel = new javax.swing.JPanel();
+        a = new javax.swing.JLabel();
+        apunch = new javax.swing.JLabel();
+        ahpunch = new javax.swing.JLabel();
+        akick = new javax.swing.JLabel();
+        ablock = new javax.swing.JLabel();
+        b = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        back = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("fighter");
+        setSize(new java.awt.Dimension(600, 800));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        hp2val.setValue(100);
+        getContentPane().add(hp2val, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 40, 200, -1));
+
+        aPanel.setOpaque(false);
+
+        a.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-a.gif"))); // NOI18N
+        aPanel.add(a);
+
+        apunch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-punch.gif"))); // NOI18N
+        apunch.setVisible(false);
+        aPanel.add(apunch);
+
+        ahpunch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-high-punch.gif"))); // NOI18N
+        ahpunch.setVisible(false);
+        aPanel.add(ahpunch);
+
+        akick.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-kick.gif"))); // NOI18N
+        akick.setVisible(false);
+        aPanel.add(akick);
+
+        ablock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-block.gif"))); // NOI18N
+        ablock.setVisible(false);
+        aPanel.add(ablock);
+
+        getContentPane().add(aPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 140, 100, 110));
+
+        b.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arduino/playa-b.gif"))); // NOI18N
+        getContentPane().add(b, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 140, -1, -1));
+
+        jButton1.setText("start");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jButton1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButton1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jButton1KeyReleased(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(304, 269, 90, -1));
+
+        jLabel3.setText("playa 2");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 20, -1, -1));
+
+        back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/back.jpg"))); // NOI18N
+        getContentPane().add(back, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 680, 530));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyPressed
+        // TODO add your handling code here:
+        int key= evt.getKeyCode();
+        System.out.println(key);
+        Timer t= new Timer();
+        if(a.isVisible()){
+        if(key==68)
+        {
+        a.setVisible(false);
+        apunch.setVisible(true);
+        
+        
+        TimerTask t1= new TimerTask(){
+        public void run(){
+        apunch.setVisible(false);
+            a.setVisible(true);}
+            };
+        t.schedule(t1, 100);
+        hp2=hp2-10;
+        }
+        
+        else if(key==87)
+        {
+        a.setVisible(false);
+        ahpunch.setVisible(true);
+        
+        
+        TimerTask t1= new TimerTask(){
+        public void run(){
+        ahpunch.setVisible(false);
+            a.setVisible(true);}
+            };
+        t.schedule(t1, 400);
+        hp2=hp2-20;
+        }
+        else if(key==83)
+        {
+        a.setVisible(false);
+        akick.setVisible(true);
+        
+        
+        TimerTask t1= new TimerTask(){
+        public void run(){
+        akick.setVisible(false);
+            a.setVisible(true);}
+            };
+        t.schedule(t1, 200);
+        hp2=hp2-15;
+        }
+        else if(key==65)
+        {
+        a.setVisible(false);
+        ablock.setVisible(true);    
+        }
+        
+        
+        hp2val.setValue(hp2);
+        if(hp2<=0)
+        { this.setVisible(false);
+        new fighter().setVisible(true);
+        
+        }
+        }
+    }//GEN-LAST:event_jButton1KeyPressed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowOpened
+
+    private void jButton1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyReleased
+        // TODO add your handling code here:
+         int key= evt.getKeyCode();
+        if(key==65){        
+        ablock.setVisible(false);
+            a.setVisible(true);
+         }
+    }//GEN-LAST:event_jButton1KeyReleased
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+       
+        this.initialize();
+        
+        Thread t=new Thread() {
+            public void run() {
+                //the following line will keep this app alive for 10 seconds,
+                //waiting for events to occur and responding to them (printing incoming messages to console).
+                try {Thread.sleep(10000);
+                }
+                catch (InterruptedException ie) {}
+            }
+        };
+        t.start();
+        
+       
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    
+    
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(fighter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(fighter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(fighter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(fighter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new fighter().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel a;
+    private javax.swing.JPanel aPanel;
+    private javax.swing.JLabel ablock;
+    private javax.swing.JLabel ahpunch;
+    private javax.swing.JLabel akick;
+    private javax.swing.JLabel apunch;
+    private javax.swing.JLabel b;
+    private javax.swing.JLabel back;
+    private javax.swing.JProgressBar hp2val;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel3;
+    // End of variables declaration//GEN-END:variables
+}
